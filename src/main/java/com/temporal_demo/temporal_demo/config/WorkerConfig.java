@@ -17,12 +17,18 @@ public class WorkerConfig {
 
     @Bean
     public WorkerFactory workerFactory() {
-        WorkerFactory factory = WorkerFactory.newInstance(workflowClient);
-        Worker worker = factory.newWorker("DATA_SYNC_TASK_QUEUE");
-        worker.registerWorkflowImplementationTypes(DataSyncWorkflowImpl.class);
-        worker.registerActivitiesImplementations(new DataSyncActivitiesImpl());
-        factory.start();
-        return factory;
+        try {
+            WorkerFactory factory = WorkerFactory.newInstance(workflowClient);
+            Worker worker = factory.newWorker("DATA_SYNC_TASK_QUEUE");
+            worker.registerWorkflowImplementationTypes(DataSyncWorkflowImpl.class);
+            worker.registerActivitiesImplementations(new DataSyncActivitiesImpl());
+            factory.start();
+            return factory;
+        } catch (Exception e) {
+            // Log the exception or handle it as needed
+            System.err.println("Failed to create WorkerFactory because temporal is not running: " + e.getMessage());
+            return null; // Return null to indicate failure
+        }
     }
 }
 
